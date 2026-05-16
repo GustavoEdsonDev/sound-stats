@@ -4,6 +4,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { spotifyService } from '@/services/spotify';
 import { useEffect, useState } from 'react';
+import { TimeRangeSelector } from '@/components/TimeRangeSelector';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ArtistCard } from '@/components/ArtistCard';
 
 function ArtistsContent() {
   const { token } = useAuth();
@@ -34,35 +37,15 @@ function ArtistsContent() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">Your Top Artists</h1>
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as any)}
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700"
-          >
-            <option value="short_term">Last 4 Weeks</option>
-            <option value="medium_term">Last 6 Months</option>
-            <option value="long_term">All Time</option>
-          </select>
+          <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin h-8 w-8 border-4 border-green-500 border-t-transparent rounded-full" />
-          </div>
+          <LoadingSpinner />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topArtists.map((artist, index) => (
-              <div key={artist.id} className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition">
-                {artist.images?.[0] && (
-                  <img src={artist.images[0].url} alt={artist.name} className="w-full h-48 object-cover" />
-                )}
-                <div className="p-4">
-                  <p className="text-gray-400 text-sm">#{index + 1}</p>
-                  <p className="font-semibold text-lg mb-2">{artist.name}</p>
-                  <p className="text-gray-400 text-sm mb-2">Popularity: {artist.popularity}%</p>
-                  <p className="text-gray-400 text-sm">{artist.genres?.slice(0, 2).join(', ')}</p>
-                </div>
-              </div>
+              <ArtistCard key={artist.id} artist={artist} index={index} />
             ))}
           </div>
         )}
@@ -78,6 +61,10 @@ function ArtistsContent() {
 export default function Artists() {
   return (
     <ProtectedRoute>
+      <ArtistsContent />
+    </ProtectedRoute>
+  );
+}
       <ArtistsContent />
     </ProtectedRoute>
   );

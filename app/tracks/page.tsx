@@ -4,6 +4,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { spotifyService } from '@/services/spotify';
 import { useEffect, useState } from 'react';
+import { TimeRangeSelector } from '@/components/TimeRangeSelector';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { TrackCard } from '@/components/TrackCard';
 
 function TracksContent() {
   const { token } = useAuth();
@@ -34,35 +37,15 @@ function TracksContent() {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">Your Top Tracks</h1>
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as any)}
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700"
-          >
-            <option value="short_term">Last 4 Weeks</option>
-            <option value="medium_term">Last 6 Months</option>
-            <option value="long_term">All Time</option>
-          </select>
+          <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin h-8 w-8 border-4 border-green-500 border-t-transparent rounded-full" />
-          </div>
+          <LoadingSpinner />
         ) : (
           <div className="space-y-2">
             {topTracks.map((track, index) => (
-              <div key={track.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition flex items-center gap-4">
-                <div className="text-gray-400 font-semibold w-8">{index + 1}</div>
-                {track.album?.images?.[0] && (
-                  <img src={track.album.images[0].url} alt={track.name} className="w-12 h-12 rounded" />
-                )}
-                <div className="flex-1">
-                  <p className="font-semibold">{track.name}</p>
-                  <p className="text-gray-400 text-sm">{track.artists?.map((a: any) => a.name).join(', ')}</p>
-                </div>
-                <p className="text-gray-400">{Math.floor(track.duration_ms / 60000)}:{Math.floor((track.duration_ms % 60000) / 1000).toString().padStart(2, '0')}</p>
-              </div>
+              <TrackCard key={track.id} track={track} index={index} />
             ))}
           </div>
         )}
