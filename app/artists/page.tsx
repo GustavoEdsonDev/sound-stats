@@ -23,7 +23,6 @@ function ArtistsContent() {
         const response = await spotifyService.getUserTopArtists(token.access_token, timeRange, 50);
         setTopArtists(response.items || []);
       } catch (error) {
-        console.error('Falha ao buscar artistas top:', error);
       } finally {
         setIsLoading(false);
       }

@@ -7,8 +7,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { code } = body;
 
-    console.log('[API Callback] Código recebido');
-
     if (!code) {
       return NextResponse.json(
         { message: 'Authorization code is required' },
@@ -18,11 +16,9 @@ export async function POST(request: NextRequest) {
 
     // Trocar código por token de acesso
     const token = await spotifyService.exchangeCodeForToken(code);
-    console.log('[API Callback] Token recebido do Spotify');
 
     // Obter perfil do usuário
     const user = await spotifyService.getUserProfile(token.access_token);
-    console.log('[API Callback] Perfil do usuário recebido:', user.display_name);
 
     // Validar se a resposta corresponde ao schema
     const authResponse = AuthResponseSchema.parse({
@@ -30,7 +26,7 @@ export async function POST(request: NextRequest) {
       token,
     });
 
-    console.log('[API Callback] Retornando resposta de autenticação');
+    console.error('[API Callback] Erro:', error);
     return NextResponse.json(authResponse);
   } catch (error) {
     console.error('[API Callback] Erro:', error);

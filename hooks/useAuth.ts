@@ -22,11 +22,9 @@ export function useAuth() {
   // Initialize auth state and setup refresh interval
   useEffect(() => {
     const initAuth = () => {
-      console.log('[useAuth] Inicializando estado de autenticação');
       const storedAuth = getStoredAuth();
 
       if (storedAuth) {
-        console.log('[useAuth] Auth armazenada encontrada, usuário:', storedAuth.user.display_name);
         const expiresIn = getTokenTimeToExpire();
         setAuthState({
           user: storedAuth.user,
@@ -41,7 +39,6 @@ export function useAuth() {
           expiresIn,
         });
       } else {
-        console.log('[useAuth] Nenhuma auth armazenada encontrada');
         setAuthState((prev) => ({ ...prev, isLoading: false }));
       }
     };

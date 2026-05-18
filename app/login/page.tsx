@@ -30,8 +30,6 @@ function LoginContent() {
 
     try {
       console.log('[Login] Código recebido:', code);
-      
-      // Trocar código por token e obter perfil do usuário
       const response = await fetch('/api/auth/callback', {
         method: 'POST',
         headers: {
@@ -56,7 +54,6 @@ function LoginContent() {
         token.expires_in || 3600,
         token.refresh_token
       );
-      console.log('[Login] Token armazenado com sucesso');
 
       // Redirecionar para dashboard
       router.push('/dashboard');

@@ -33,10 +33,6 @@ export function storeAuth(
   sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   sessionStorage.setItem(STORAGE_KEYS.EXPIRES_AT, expiresAt.toString());
 
-  if (refreshToken) {
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
-  }
-
   console.log('[Auth] Token armazenado:', {
     accessToken: accessToken.slice(0, 20) + '...',
     expiresIn,
@@ -86,25 +82,11 @@ export function getAccessToken(): string | null {
   const token = sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   const expiresAtStr = sessionStorage.getItem(STORAGE_KEYS.EXPIRES_AT);
 
-  console.log('[Auth] Obtendo token de acesso:', {
-    tokenExists: !!token,
-    expiresAtExists: !!expiresAtStr,
-  });
-
-  if (!token || !expiresAtStr) {
-    console.log('[Auth] Token ou expiração ausente');
-    return null;
-  }
-
-  const expiresAt = parseInt(expiresAtStr, 10);
-
-  if (isTokenExpired(expiresAt)) {
-    console.log('[Auth] Token expirado');
+  if (!token || !expiresAtStr) return null;
     clearAuth();
     return null;
   }
 
-  console.log('[Auth] Retornando token válido');
   return token;
 }
 

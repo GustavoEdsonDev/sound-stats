@@ -26,24 +26,16 @@ function DashboardContent() {
     const fetchDashboardData = async () => {
       setIsLoading(true);
       try {
-        console.log('[Dashboard] Buscando dados...');
         const [tracksRes, artistsRes, playlistsRes] = await Promise.all([
           spotifyService.getUserTopTracks(token.access_token, 'medium_term', 10),
           spotifyService.getUserTopArtists(token.access_token, 'medium_term', 8),
           spotifyService.getUserPlaylists(token.access_token, 50),
         ]);
         
-        console.log('[Dashboard] Tracks recebidos:', tracksRes);
-        console.log('[Dashboard] Artists recebidos:', artistsRes);
-        console.log('[Dashboard] Playlists recebidos:', playlistsRes);
-        
-        // Usar dados como estão - os gráficos vão funcionar mesmo sem popularity em todos os campos
         setTopTracks(tracksRes.items || []);
         setTopArtists(artistsRes.items || []);
         setPlaylists(playlistsRes.items || []);
-        console.log('[Dashboard] Dados carregados');
       } catch (error) {
-        console.error('[Dashboard] Erro ao buscar dados:', error);
       } finally {
         setIsLoading(false);
       }

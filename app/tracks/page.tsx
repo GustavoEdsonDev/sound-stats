@@ -23,7 +23,6 @@ function TracksContent() {
         const response = await spotifyService.getUserTopTracks(token.access_token, timeRange, 50);
         setTopTracks(response.items || []);
       } catch (error) {
-        console.error('Falha ao buscar músicas top:', error);
       } finally {
         setIsLoading(false);
       }

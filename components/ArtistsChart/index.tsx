@@ -12,15 +12,10 @@ interface ArtistsChartProps {
 const COLORS = ['#22C55E', '#16A34A', '#15803D', '#166534', '#052E16', '#3B82F6', '#06B6D4', '#EC4899'];
 
 export function ArtistsChart({ artists }: ArtistsChartProps) {
-  console.log('[ArtistsChart] Recebido artists:', artists.length, artists);
-  
-  // Se não tiver popularity, usar índice reverso como valor
   const data = artists.slice(0, 8).map((artist, idx) => ({
     name: artist.name.length > 15 ? artist.name.substring(0, 12) + '...' : artist.name,
-    value: artist.popularity ?? (8 - idx) * 10, // fallback: 80, 70, 60...
+    value: artist.popularity ?? (8 - idx) * 10,
   }));
-
-  console.log('[ArtistsChart] Dados do gráfico:', data);
 
   if (data.length === 0) return null;
 
