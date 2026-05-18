@@ -46,7 +46,12 @@ function RecentlyPlayedContent() {
         ) : (
           <div className="space-y-2">
             {recentlyPlayed.map((item, index) => (
-              <TrackCard key={`${item.track.id}-${index}`} track={item.track} index={index} />
+              <TrackCard 
+                key={`${item.track.id}-${index}`} 
+                track={item.track} 
+                index={index}
+                playedAt={item.played_at}
+              />
             ))}
           </div>
         )}
