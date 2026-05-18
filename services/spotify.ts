@@ -271,6 +271,70 @@ export class SpotifyService {
     console.log('[Spotify] Tocadas Recentemente:', data);
     return data;
   }
+
+  /**
+   * Obter detalhes completos de múltiplos tracks (inclui popularity)
+   */
+  async getTracksDetails(accessToken: string, trackIds: string[]) {
+    if (trackIds.length === 0) return { tracks: [] };
+
+    const params = new URLSearchParams({
+      ids: trackIds.join(','),
+    });
+
+    console.log('[Spotify] Buscando detalhes de tracks com IDs:', trackIds);
+
+    const response = await fetch(`${SPOTIFY_API_BASE}/tracks?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[Spotify] Erro ao buscar detalhes de tracks:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar detalhes de tracks: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[Spotify] Detalhes de Tracks:', data);
+    return data;
+  }
+
+  /**
+   * Obter detalhes completos de múltiplos artistas (inclui popularity)
+   */
+  async getArtistsDetails(accessToken: string, artistIds: string[]) {
+    if (artistIds.length === 0) return { artists: [] };
+
+    const params = new URLSearchParams({
+      ids: artistIds.join(','),
+    });
+
+    console.log('[Spotify] Buscando detalhes de artistas com IDs:', artistIds);
+
+    const response = await fetch(`${SPOTIFY_API_BASE}/artists?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[Spotify] Erro ao buscar detalhes de artistas:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar detalhes de artistas: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[Spotify] Detalhes de Artistas:', data);
+    return data;
+  }
 }
 
 export const spotifyService = new SpotifyService();
