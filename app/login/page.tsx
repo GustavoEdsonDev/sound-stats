@@ -140,10 +140,6 @@ function LoginContent() {
             </button>
           )}
         </div>
-
-        <p className="text-center text-gray-500 text-xs mt-6">
-          Ao fazer login, você concorda com os termos de serviço do Spotify
-        </p>
       </div>
     </div>
   );

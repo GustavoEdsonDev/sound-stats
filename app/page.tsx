@@ -95,7 +95,7 @@ function LoginContent() {
       <div className="bg-gray-900 rounded-lg shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Sound Stats</h1>
-          <p className="text-gray-400">Discover your music statistics</p>
+          <p className="text-gray-400">Descubra suas estatísticas de música</p>
         </div>
 
         {error && (
@@ -136,10 +136,6 @@ function LoginContent() {
             </button>
           )}
         </div>
-
-        <p className="text-center text-gray-500 text-xs mt-6">
-          Ao fazer login, você concorda com os termos de serviço do Spotify
-        </p>
       </div>
     </div>
   );

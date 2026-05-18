@@ -19,7 +19,7 @@ export function UserProfile({ user }: UserProfileProps) {
           />
         )}
         <div>
-          <h1 className="text-4xl font-bold">Welcome, {user?.display_name || 'User'}</h1>
+          <h1 className="text-4xl font-bold">Bem vindo, {user?.display_name || 'Usuário'}</h1>
           {countryName && <p className="text-gray-400">{countryName}</p>}
           <p className="text-gray-400">Spotify ID: {user?.id}</p>
         </div>
