@@ -13,21 +13,16 @@ function RecentlyPlayedContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log('[Recentemente Tocadas] Token disponível:', !!token?.access_token);
     if (!token?.access_token) {
-      console.log('[Recentemente Tocadas] Sem token, pulando busca');
       return;
     }
 
     const fetchRecentlyPlayed = async () => {
       setIsLoading(true);
       try {
-        console.log('[Recentemente Tocadas] Buscando com token:', token.access_token.slice(0, 20) + '...');
         const response = await spotifyService.getUserRecentlyPlayed(token.access_token, 50);
-        console.log('[Recentemente Tocadas] Resposta recebida:', response);
         setRecentlyPlayed(response.items || []);
       } catch (error) {
-        console.error('[Recentemente Tocadas] Falha ao buscar:', error);
       } finally {
         setIsLoading(false);
       }

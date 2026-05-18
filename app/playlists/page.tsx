@@ -21,7 +21,6 @@ function PlaylistsContent() {
         const response = await spotifyService.getUserPlaylists(token.access_token, 50);
         setPlaylists(response.items || []);
       } catch (error) {
-        console.error('Falha ao buscar playlists:', error);
       } finally {
         setIsLoading(false);
       }

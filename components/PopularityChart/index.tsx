@@ -11,15 +11,10 @@ interface PopularityChartProps {
 }
 
 export function PopularityChart({ tracks }: PopularityChartProps) {
-  console.log('[PopularityChart] Recebido tracks:', tracks.length, tracks);
-  
-  // Se não tiver popularity, usar índice reverso como valor (último é mais popular)
   const data = tracks.slice(0, 10).map((track, idx) => ({
     name: track.name.length > 20 ? track.name.substring(0, 17) + '...' : track.name,
-    Popularidade: track.popularity ?? (10 - idx) * 10, // fallback: 100, 90, 80...
+    Popularidade: track.popularity ?? (10 - idx) * 10,
   }));
-
-  console.log('[PopularityChart] Dados do gráfico:', data);
 
   if (data.length === 0) return null;
 
