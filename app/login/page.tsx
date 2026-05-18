@@ -29,7 +29,6 @@ function LoginContent() {
     setError(null);
 
     try {
-      console.log('[Login] Código recebido:', code);
       const response = await fetch('/api/auth/callback', {
         method: 'POST',
         headers: {
@@ -39,13 +38,17 @@ function LoginContent() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to authenticate');
+        const errorData = await response.json();
+        const errorMsg = errorData.message || 'Falha ao autenticar';
+        
+        // Se for código inválido/expirado, dar mensagem mais clara
+        if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
+          throw new Error('Código de autorização expirou. Faça login novamente clicando no botão abaixo.');
+        }
+        throw new Error(errorMsg);
       }
 
       const { user, token } = await response.json();
-      console.log('[Login] Token recebido:', token);
-      console.log('[Login] Usuário recebido:', user);
 
       // Armazenar token com expiração
       storeAuth(
