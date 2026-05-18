@@ -8,15 +8,33 @@ interface TrackCardProps {
     popularity?: number;
   };
   index: number;
+  playedAt?: string;
 }
 
-export function TrackCard({ track, index }: TrackCardProps) {
+export function TrackCard({ track, index, playedAt }: TrackCardProps) {
   console.log('[TrackCard] Track data:', { name: track.name, popularity: track.popularity });
   
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const formatPlayedAt = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Agora';
+    if (diffMins < 60) return `há ${diffMins}m`;
+    if (diffHours < 24) return `há ${diffHours}h`;
+    if (diffDays === 1) return 'Ontem';
+    if (diffDays < 7) return `há ${diffDays}d`;
+    
+    return date.toLocaleDateString('pt-BR');
   };
 
   return (
@@ -30,6 +48,11 @@ export function TrackCard({ track, index }: TrackCardProps) {
         <p className="text-gray-400 text-sm">{track.artists?.map((a) => a.name).join(', ')}</p>
       </div>
       <div className="flex items-center gap-4">
+        {playedAt && (
+          <div className="text-gray-400 text-sm min-w-max">
+            {formatPlayedAt(playedAt)}
+          </div>
+        )}
         {track.popularity !== undefined && (
           <div className="flex items-center gap-2 text-center">
             <div className="flex flex-col items-center">
