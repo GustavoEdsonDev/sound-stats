@@ -23,7 +23,7 @@ function TracksContent() {
         const response = await spotifyService.getUserTopTracks(token.access_token, timeRange, 50);
         setTopTracks(response.items || []);
       } catch (error) {
-        console.error('Failed to fetch top tracks:', error);
+        console.error('Falha ao buscar músicas top:', error);
       } finally {
         setIsLoading(false);
       }
@@ -36,7 +36,7 @@ function TracksContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Your Top Tracks</h1>
+          <h1 className="text-4xl font-bold">Suas Músicas Top</h1>
           <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
         </div>
 
@@ -51,7 +51,7 @@ function TracksContent() {
         )}
 
         <a href="/dashboard" className="inline-block mt-8 bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold transition">
-          Back to Dashboard
+          Voltar ao Painel
         </a>
       </div>
     </div>

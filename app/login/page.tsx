@@ -29,7 +29,9 @@ function LoginContent() {
     setError(null);
 
     try {
-      // Exchange code for token and get user profile
+      console.log('[Login] Código recebido:', code);
+      
+      // Trocar código por token e obter perfil do usuário
       const response = await fetch('/api/auth/callback', {
         method: 'POST',
         headers: {
@@ -44,19 +46,22 @@ function LoginContent() {
       }
 
       const { user, token } = await response.json();
+      console.log('[Login] Token recebido:', token);
+      console.log('[Login] Usuário recebido:', user);
 
-      // Store token with expiration
+      // Armazenar token com expiração
       storeAuth(
         token.access_token,
         user,
         token.expires_in || 3600,
         token.refresh_token
       );
+      console.log('[Login] Token armazenado com sucesso');
 
-      // Redirect to dashboard
+      // Redirecionar para dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Ocorreu um erro');
       setIsLoading(false);
     }
   };
@@ -73,11 +78,11 @@ function LoginContent() {
           window.location.href = authUrl;
         })
         .catch((err) => {
-          setError('Failed to initiate Spotify login');
+          setError('Falha ao iniciar login do Spotify');
           setIsLoading(false);
         });
     } catch (err) {
-      setError('Failed to initiate Spotify login');
+          setError('Falha ao iniciar login do Spotify');
       setIsLoading(false);
     }
   };
@@ -94,7 +99,7 @@ function LoginContent() {
       <div className="bg-gray-900 rounded-lg shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Sound Stats</h1>
-          <p className="text-gray-400">Discover your music statistics</p>
+          <p className="text-gray-400">Descubra suas estatísticas de música</p>
         </div>
 
         {error && (
