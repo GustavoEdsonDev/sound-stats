@@ -33,6 +33,10 @@ function DashboardContent() {
           spotifyService.getUserPlaylists(token.access_token, 50),
         ]);
         
+        console.log('[Dashboard] Tracks recebidos:', tracksRes);
+        console.log('[Dashboard] Artists recebidos:', artistsRes);
+        console.log('[Dashboard] Playlists recebidos:', playlistsRes);
+        
         setTopTracks(tracksRes.items || []);
         setTopArtists(artistsRes.items || []);
         setPlaylists(playlistsRes.items || []);

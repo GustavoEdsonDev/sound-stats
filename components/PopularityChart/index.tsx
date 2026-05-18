@@ -11,10 +11,14 @@ interface PopularityChartProps {
 }
 
 export function PopularityChart({ tracks }: PopularityChartProps) {
+  console.log('[PopularityChart] Recebido tracks:', tracks.length, tracks);
+  
   const data = tracks.slice(0, 10).map((track) => ({
     name: track.name.length > 20 ? track.name.substring(0, 17) + '...' : track.name,
     Popularidade: track.popularity,
   }));
+
+  console.log('[PopularityChart] Dados do gráfico:', data);
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
