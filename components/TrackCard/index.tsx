@@ -11,6 +11,8 @@ interface TrackCardProps {
 }
 
 export function TrackCard({ track, index }: TrackCardProps) {
+  console.log('[TrackCard] Track data:', { name: track.name, popularity: track.popularity });
+  
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
