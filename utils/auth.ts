@@ -83,6 +83,10 @@ export function getAccessToken(): string | null {
   const expiresAtStr = sessionStorage.getItem(STORAGE_KEYS.EXPIRES_AT);
 
   if (!token || !expiresAtStr) return null;
+
+  const expiresAt = parseInt(expiresAtStr, 10);
+
+  if (isTokenExpired(expiresAt)) {
     clearAuth();
     return null;
   }
