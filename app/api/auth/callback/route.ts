@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
       token,
     });
 
-    console.error('[API Callback] Erro:', error);
     return NextResponse.json(authResponse);
   } catch (error) {
     console.error('[API Callback] Erro:', error);
