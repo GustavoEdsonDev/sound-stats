@@ -37,27 +37,9 @@ function DashboardContent() {
         console.log('[Dashboard] Artists recebidos:', artistsRes);
         console.log('[Dashboard] Playlists recebidos:', playlistsRes);
         
-        // Buscar detalhes completos com popularity
-        const trackIds = tracksRes.items?.map((t: any) => t.id) || [];
-        const artistIds = artistsRes.items?.map((a: any) => a.id) || [];
-        
-        let tracksWithDetails = tracksRes.items || [];
-        let artistsWithDetails = artistsRes.items || [];
-        
-        if (trackIds.length > 0) {
-          const detailedTracks = await spotifyService.getTracksDetails(token.access_token, trackIds);
-          tracksWithDetails = detailedTracks.tracks;
-          console.log('[Dashboard] Tracks com popularity:', tracksWithDetails);
-        }
-        
-        if (artistIds.length > 0) {
-          const detailedArtists = await spotifyService.getArtistsDetails(token.access_token, artistIds);
-          artistsWithDetails = detailedArtists.artists;
-          console.log('[Dashboard] Artists com popularity:', artistsWithDetails);
-        }
-        
-        setTopTracks(tracksWithDetails);
-        setTopArtists(artistsWithDetails);
+        // Usar dados como estão - os gráficos vão funcionar mesmo sem popularity em todos os campos
+        setTopTracks(tracksRes.items || []);
+        setTopArtists(artistsRes.items || []);
         setPlaylists(playlistsRes.items || []);
         console.log('[Dashboard] Dados carregados');
       } catch (error) {

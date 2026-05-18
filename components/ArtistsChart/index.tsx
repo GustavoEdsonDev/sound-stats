@@ -14,12 +14,15 @@ const COLORS = ['#22C55E', '#16A34A', '#15803D', '#166534', '#052E16', '#3B82F6'
 export function ArtistsChart({ artists }: ArtistsChartProps) {
   console.log('[ArtistsChart] Recebido artists:', artists.length, artists);
   
-  const data = artists.slice(0, 8).map((artist) => ({
+  // Se não tiver popularity, usar índice reverso como valor
+  const data = artists.slice(0, 8).map((artist, idx) => ({
     name: artist.name.length > 15 ? artist.name.substring(0, 12) + '...' : artist.name,
-    value: artist.popularity,
+    value: artist.popularity ?? (8 - idx) * 10, // fallback: 80, 70, 60...
   }));
 
   console.log('[ArtistsChart] Dados do gráfico:', data);
+
+  if (data.length === 0) return null;
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
