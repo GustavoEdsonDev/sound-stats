@@ -193,6 +193,27 @@ export class SpotifyService {
 
     return response.json();
   }
+
+  /**
+   * Get user's recently played tracks
+   */
+  async getUserRecentlyPlayed(accessToken: string, limit: number = 50) {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+    });
+
+    const response = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recently played tracks');
+    }
+
+    return response.json();
+  }
 }
 
 export const spotifyService = new SpotifyService();

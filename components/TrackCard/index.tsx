@@ -5,6 +5,7 @@ interface TrackCardProps {
     artists?: Array<{ name: string }>;
     album?: { images?: Array<{ url: string }> };
     duration_ms: number;
+    popularity?: number;
   };
   index: number;
 }
@@ -26,7 +27,20 @@ export function TrackCard({ track, index }: TrackCardProps) {
         <p className="font-semibold">{track.name}</p>
         <p className="text-gray-400 text-sm">{track.artists?.map((a) => a.name).join(', ')}</p>
       </div>
-      <p className="text-gray-400">{formatDuration(track.duration_ms)}</p>
+      <div className="flex items-center gap-4">
+        {track.popularity !== undefined && (
+          <div className="flex items-center gap-2">
+            <div className="w-16 bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-green-500 h-2 rounded-full"
+                style={{ width: `${track.popularity}%` }}
+              />
+            </div>
+            <span className="text-gray-400 text-sm w-8">{track.popularity}%</span>
+          </div>
+        )}
+        <p className="text-gray-400 w-12">{formatDuration(track.duration_ms)}</p>
+      </div>
     </div>
   );
 }

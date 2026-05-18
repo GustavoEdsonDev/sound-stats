@@ -40,8 +40,8 @@ function DashboardContent() {
             {[
               { name: 'Top Tracks', href: '/tracks' },
               { name: 'Top Artists', href: '/artists' },
+              { name: 'Recently Played', href: '/recently-played' },
               { name: 'Playlists', href: '/playlists' },
-              { name: 'Back to Login', href: '/login' },
             ].map((link) => (
               <a
                 key={link.href}

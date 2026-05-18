@@ -149,3 +149,13 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength - 3) + '...';
 }
+
+/**
+ * Convert ISO 3166-1 alpha-2 country code to country name
+ */
+export function countryCodeToName(countryCode?: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+
+  const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+  return regionNames.of(countryCode.toUpperCase()) || '';
+}
