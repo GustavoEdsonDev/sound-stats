@@ -29,14 +29,17 @@ export function TrackCard({ track, index }: TrackCardProps) {
       </div>
       <div className="flex items-center gap-4">
         {track.popularity !== undefined && (
-          <div className="flex items-center gap-2">
-            <div className="w-16 bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-green-500 h-2 rounded-full"
-                style={{ width: `${track.popularity}%` }}
-              />
+          <div className="flex items-center gap-2 text-center">
+            <div className="flex flex-col items-center">
+              <span className="text-gray-500 text-xs mb-1">Popularidade</span>
+              <div className="w-16 bg-gray-700 rounded-full h-2">
+                <div
+                  className="bg-green-500 h-2 rounded-full"
+                  style={{ width: `${track.popularity}%` }}
+                />
+              </div>
+              <span className="text-green-400 text-sm font-semibold mt-1">{track.popularity}%</span>
             </div>
-            <span className="text-gray-400 text-sm w-8">{track.popularity}%</span>
           </div>
         )}
         <p className="text-gray-400 w-12">{formatDuration(track.duration_ms)}</p>
