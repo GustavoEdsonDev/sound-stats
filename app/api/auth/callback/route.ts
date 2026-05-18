@@ -28,9 +28,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(authResponse);
   } catch (error) {
-    console.error('[API Callback] Erro:', error);
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : 'Authentication failed' },
+      { message: error instanceof Error ? error.message : 'Falha na autenticação' },
       { status: 500 }
     );
   }
