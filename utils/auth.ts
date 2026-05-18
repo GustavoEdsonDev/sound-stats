@@ -32,12 +32,6 @@ export function storeAuth(
   sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
   sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   sessionStorage.setItem(STORAGE_KEYS.EXPIRES_AT, expiresAt.toString());
-
-  console.log('[Auth] Token armazenado:', {
-    accessToken: accessToken.slice(0, 20) + '...',
-    expiresIn,
-    refreshToken: refreshToken ? 'presente' : 'ausente',
-  });
 }
 
 /**

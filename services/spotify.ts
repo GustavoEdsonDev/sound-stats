@@ -74,7 +74,6 @@ export class SpotifyService {
     }
 
     const data = await response.json();
-    console.log('[Spotify] Resposta de Troca de Token:', data);
     return SpotifyTokenSchema.parse(data);
   }
 
@@ -102,7 +101,6 @@ export class SpotifyService {
     }
 
     const data = await response.json();
-    console.log('[Spotify] Resposta de Renovação de Token:', data);
     return SpotifyTokenSchema.parse(data);
   }
 
@@ -237,8 +235,6 @@ export class SpotifyService {
       ids: trackIds.join(','),
     });
 
-    console.log('[Spotify] Buscando detalhes de tracks com IDs:', trackIds);
-
     const response = await fetch(`${SPOTIFY_API_BASE}/tracks?${params}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -247,15 +243,10 @@ export class SpotifyService {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('[Spotify] Erro ao buscar detalhes de tracks:', {
-        status: response.status,
-        error: errorData,
-      });
       throw new Error(`Falha ao buscar detalhes de tracks: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('[Spotify] Detalhes de Tracks:', data);
     return data;
   }
 
@@ -269,8 +260,6 @@ export class SpotifyService {
       ids: artistIds.join(','),
     });
 
-    console.log('[Spotify] Buscando detalhes de artistas com IDs:', artistIds);
-
     const response = await fetch(`${SPOTIFY_API_BASE}/artists?${params}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -279,15 +268,10 @@ export class SpotifyService {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('[Spotify] Erro ao buscar detalhes de artistas:', {
-        status: response.status,
-        error: errorData,
-      });
       throw new Error(`Falha ao buscar detalhes de artistas: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('[Spotify] Detalhes de Artistas:', data);
     return data;
   }
 }
