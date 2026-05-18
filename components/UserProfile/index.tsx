@@ -1,10 +1,13 @@
 import type { SpotifyUser } from '@/types/spotify';
+import { countryCodeToName } from '@/utils/auth';
 
 interface UserProfileProps {
   user: SpotifyUser;
 }
 
 export function UserProfile({ user }: UserProfileProps) {
+  const countryName = countryCodeToName(user?.country);
+
   return (
     <div className="flex items-center justify-between mb-8">
       <div className="flex items-center gap-4">
@@ -17,6 +20,7 @@ export function UserProfile({ user }: UserProfileProps) {
         )}
         <div>
           <h1 className="text-4xl font-bold">Welcome, {user?.display_name || 'User'}</h1>
+          {countryName && <p className="text-gray-400">{countryName}</p>}
           <p className="text-gray-400">Spotify ID: {user?.id}</p>
         </div>
       </div>

@@ -39,6 +39,7 @@ export const SpotifyUserSchema = z.object({
     })
     .optional(),
   product: z.string().optional(),
+  country: z.string().optional(),
 });
 
 export type SpotifyUser = z.infer<typeof SpotifyUserSchema>;
