@@ -19,28 +19,28 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Cabeçalho */}
         {user && <UserProfile user={user} />}
 
         <div className="flex justify-end mb-8">
           <LogoutButton onClick={handleLogout} />
         </div>
 
-        {/* Stats Cards */}
+        {/* Cartões de Estatísticas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard label="Followers" value={user?.followers?.total.toLocaleString() || 0} variant="highlight" />
-          <StatCard label="Account Type" value={user?.product || 'Premium'} variant="highlight" />
-          <StatCard label="Status" value="Active" variant="highlight" />
+          <StatCard label="Seguidores" value={user?.followers?.total.toLocaleString() || 0} variant="highlight" />
+          <StatCard label="Tipo de Conta" value={user?.product || 'Premium'} variant="highlight" />
+          <StatCard label="Status" value="Ativo" variant="highlight" />
         </div>
 
-        {/* Quick Links */}
+        {/* Links Rápidos */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold mb-4">Navigation</h2>
+          <h2 className="text-2xl font-bold mb-4">Navegação</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { name: 'Top Tracks', href: '/tracks' },
-              { name: 'Top Artists', href: '/artists' },
-              { name: 'Recently Played', href: '/recently-played' },
+              { name: 'Top Músicas', href: '/tracks' },
+              { name: 'Top Artistas', href: '/artists' },
+              { name: 'Tocadas Recentemente', href: '/recently-played' },
               { name: 'Playlists', href: '/playlists' },
             ].map((link) => (
               <a

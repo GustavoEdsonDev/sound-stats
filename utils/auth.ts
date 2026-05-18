@@ -1,5 +1,5 @@
 /**
- * Auth storage utilities
+ * Utilitários de armazenamento de autenticação
  */
 
 export interface StoredAuthData {
@@ -17,7 +17,7 @@ const STORAGE_KEYS = {
 } as const;
 
 /**
- * Store auth data with expiration timestamp
+ * Armazenar dados de autenticação com timestamp de expiração
  */
 export function storeAuth(
   accessToken: string,
@@ -36,10 +36,16 @@ export function storeAuth(
   if (refreshToken) {
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
   }
+
+  console.log('[Auth] Token armazenado:', {
+    accessToken: accessToken.slice(0, 20) + '...',
+    expiresIn,
+    refreshToken: refreshToken ? 'presente' : 'ausente',
+  });
 }
 
 /**
- * Get stored auth data with expiration check
+ * Obter dados de autenticação armazenados com verificação de expiração
  */
 export function getStoredAuth(): StoredAuthData | null {
   if (typeof window === 'undefined') return null;
@@ -72,7 +78,7 @@ export function getStoredAuth(): StoredAuthData | null {
 }
 
 /**
- * Get access token if valid
+ * Obter token de acesso se válido
  */
 export function getAccessToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -80,20 +86,30 @@ export function getAccessToken(): string | null {
   const token = sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   const expiresAtStr = sessionStorage.getItem(STORAGE_KEYS.EXPIRES_AT);
 
-  if (!token || !expiresAtStr) return null;
+  console.log('[Auth] Obtendo token de acesso:', {
+    tokenExists: !!token,
+    expiresAtExists: !!expiresAtStr,
+  });
+
+  if (!token || !expiresAtStr) {
+    console.log('[Auth] Token ou expiração ausente');
+    return null;
+  }
 
   const expiresAt = parseInt(expiresAtStr, 10);
 
   if (isTokenExpired(expiresAt)) {
+    console.log('[Auth] Token expirado');
     clearAuth();
     return null;
   }
 
+  console.log('[Auth] Retornando token válido');
   return token;
 }
 
 /**
- * Check if token is expired
+ * Verificar se o token expirou
  */
 export function isTokenExpired(expiresAt: number): boolean {
   return Date.now() >= expiresAt;

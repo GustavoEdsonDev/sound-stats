@@ -13,15 +13,21 @@ function RecentlyPlayedContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!token?.access_token) return;
+    console.log('[Recentemente Tocadas] Token disponível:', !!token?.access_token);
+    if (!token?.access_token) {
+      console.log('[Recentemente Tocadas] Sem token, pulando busca');
+      return;
+    }
 
     const fetchRecentlyPlayed = async () => {
       setIsLoading(true);
       try {
+        console.log('[Recentemente Tocadas] Buscando com token:', token.access_token.slice(0, 20) + '...');
         const response = await spotifyService.getUserRecentlyPlayed(token.access_token, 50);
+        console.log('[Recentemente Tocadas] Resposta recebida:', response);
         setRecentlyPlayed(response.items || []);
       } catch (error) {
-        console.error('Failed to fetch recently played:', error);
+        console.error('[Recentemente Tocadas] Falha ao buscar:', error);
       } finally {
         setIsLoading(false);
       }
@@ -33,7 +39,7 @@ function RecentlyPlayedContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Recently Played</h1>
+        <h1 className="text-4xl font-bold mb-8">Tocadas Recentemente</h1>
 
         {isLoading ? (
           <LoadingSpinner />
@@ -46,7 +52,7 @@ function RecentlyPlayedContent() {
         )}
 
         <a href="/dashboard" className="inline-block mt-8 bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold transition">
-          Back to Dashboard
+          Voltar ao Painel
         </a>
       </div>
     </div>

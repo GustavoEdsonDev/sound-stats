@@ -16,17 +16,17 @@ export class SpotifyService {
   }
 
   /**
-   * Generate Spotify OAuth authorization URL
+   * Gerar URL de autorização do Spotify
    */
   getAuthorizationUrl(): string {
     if (!this.clientId) {
       throw new Error(
-        'Spotify Client ID is not configured. Set NEXT_PUBLIC_SPOTIFY_CLIENT_ID in .env.local'
+        'ID do Cliente do Spotify não está configurado. Defina NEXT_PUBLIC_SPOTIFY_CLIENT_ID em .env.local'
       );
     }
     if (!this.redirectUri) {
       throw new Error(
-        'Spotify Redirect URI is not configured. Set NEXT_PUBLIC_SPOTIFY_REDIRECT_URI in .env.local'
+        'URI de Redirecionação do Spotify não está configurado. Defina NEXT_PUBLIC_SPOTIFY_REDIRECT_URI em .env.local'
       );
     }
 
@@ -49,7 +49,7 @@ export class SpotifyService {
   }
 
   /**
-   * Exchange authorization code for access token
+   * Trocar código de autorização por token de acesso
    */
   async exchangeCodeForToken(code: string): Promise<z.infer<typeof SpotifyTokenSchema>> {
     const params = new URLSearchParams({
@@ -69,15 +69,16 @@ export class SpotifyService {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`Failed to exchange code for token: ${error.error_description || error.error}`);
+      throw new Error(`Falha ao trocar código por token: ${error.error_description || error.error}`);
     }
 
     const data = await response.json();
+    console.log('[Spotify] Resposta de Troca de Token:', data);
     return SpotifyTokenSchema.parse(data);
   }
 
   /**
-   * Refresh access token using refresh token
+   * Renovar token de acesso usando refresh token
    */
   async refreshAccessToken(refreshToken: string): Promise<z.infer<typeof SpotifyTokenSchema>> {
     const params = new URLSearchParams({
@@ -96,33 +97,44 @@ export class SpotifyService {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`Failed to refresh token: ${error.error_description || error.error}`);
+      throw new Error(`Falha ao renovar token: ${error.error_description || error.error}`);
     }
 
     const data = await response.json();
+    console.log('[Spotify] Resposta de Renovação de Token:', data);
     return SpotifyTokenSchema.parse(data);
   }
 
   /**
-   * Get current user's profile
+   * Obter perfil do usuário atual
    */
   async getUserProfile(accessToken: string): Promise<z.infer<typeof SpotifyUserSchema>> {
+    console.log('[Spotify] Buscando perfil do usuário com token:', accessToken.slice(0, 20) + '...');
+
     const response = await fetch(`${SPOTIFY_API_BASE}/me`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
     });
 
+    console.log('[Spotify] Status da Resposta do Perfil:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to fetch user profile');
+      const errorData = await response.json();
+      console.error('[Spotify] Erro no Perfil do Usuário:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar perfil do usuário: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
     const data = await response.json();
+    console.log('[Spotify] Perfil do Usuário:', data);
     return SpotifyUserSchema.parse(data);
   }
 
   /**
-   * Get user's top tracks
+   * Obter top tracks do usuário
    */
   async getUserTopTracks(
     accessToken: string,
@@ -134,21 +146,32 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
+    console.log('[Spotify] Buscando top tracks com token:', accessToken.slice(0, 20) + '...');
+
     const response = await fetch(`${SPOTIFY_API_BASE}/me/top/tracks?${params}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
     });
 
+    console.log('[Spotify] Status da Resposta de Top Tracks:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to fetch user top tracks');
+      const errorData = await response.json();
+      console.error('[Spotify] Erro em Top Tracks:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar top tracks: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('[Spotify] Top Tracks:', data);
+    return data;
   }
 
   /**
-   * Get user's top artists
+   * Obter top artistas do usuário
    */
   async getUserTopArtists(
     accessToken: string,
@@ -160,26 +183,39 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
+    console.log('[Spotify] Buscando top artistas com token:', accessToken.slice(0, 20) + '...');
+
     const response = await fetch(`${SPOTIFY_API_BASE}/me/top/artists?${params}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
       },
     });
 
+    console.log('[Spotify] Status da Resposta de Top Artistas:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to fetch user top artists');
+      const errorData = await response.json();
+      console.error('[Spotify] Erro em Top Artistas:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar top artistas: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('[Spotify] Top Artistas:', data);
+    return data;
   }
 
   /**
-   * Get user's playlists
+   * Obter playlists do usuário
    */
   async getUserPlaylists(accessToken: string, limit: number = 50) {
     const params = new URLSearchParams({
       limit: limit.toString(),
     });
+
+    console.log('[Spotify] Buscando playlists com token:', accessToken.slice(0, 20) + '...');
 
     const response = await fetch(`${SPOTIFY_API_BASE}/me/playlists?${params}`, {
       headers: {
@@ -187,20 +223,31 @@ export class SpotifyService {
       },
     });
 
+    console.log('[Spotify] Status da Resposta de Playlists:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to fetch user playlists');
+      const errorData = await response.json();
+      console.error('[Spotify] Erro em Playlists:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar playlists do usuário: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('[Spotify] Playlists:', data);
+    return data;
   }
 
   /**
-   * Get user's recently played tracks
+   * Obter músicas tocadas recentemente
    */
   async getUserRecentlyPlayed(accessToken: string, limit: number = 50) {
     const params = new URLSearchParams({
       limit: limit.toString(),
     });
+
+    console.log('[Spotify] Buscando tocadas recentemente com token:', accessToken.slice(0, 20) + '...');
 
     const response = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?${params}`, {
       headers: {
@@ -208,11 +255,20 @@ export class SpotifyService {
       },
     });
 
+    console.log('[Spotify] Status da Resposta de Tocadas Recentes:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to fetch recently played tracks');
+      const errorData = await response.json();
+      console.error('[Spotify] Erro em Tocadas Recentes:', {
+        status: response.status,
+        error: errorData,
+      });
+      throw new Error(`Falha ao buscar tocadas recentemente: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('[Spotify] Tocadas Recentemente:', data);
+    return data;
   }
 }
 
