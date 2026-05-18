@@ -6,10 +6,46 @@ import { useRouter } from 'next/navigation';
 import { UserProfile } from '@/components/UserProfile';
 import { StatCard } from '@/components/StatCard';
 import { LogoutButton } from '@/components/LogoutButton';
+import { PopularityChart } from '@/components/PopularityChart';
+import { ArtistsChart } from '@/components/ArtistsChart';
+import { spotifyService } from '@/services/spotify';
+import { useEffect, useState } from 'react';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 function DashboardContent() {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const router = useRouter();
+  const [topTracks, setTopTracks] = useState<any[]>([]);
+  const [topArtists, setTopArtists] = useState<any[]>([]);
+  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token?.access_token) return;
+
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        console.log('[Dashboard] Buscando dados...');
+        const [tracksRes, artistsRes, playlistsRes] = await Promise.all([
+          spotifyService.getUserTopTracks(token.access_token, 'medium_term', 10),
+          spotifyService.getUserTopArtists(token.access_token, 'medium_term', 8),
+          spotifyService.getUserPlaylists(token.access_token, 50),
+        ]);
+        
+        setTopTracks(tracksRes.items || []);
+        setTopArtists(artistsRes.items || []);
+        setPlaylists(playlistsRes.items || []);
+        console.log('[Dashboard] Dados carregados');
+      } catch (error) {
+        console.error('[Dashboard] Erro ao buscar dados:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [token]);
 
   const handleLogout = () => {
     logout();
@@ -30,8 +66,20 @@ function DashboardContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard label="Seguidores" value={user?.followers?.total.toLocaleString() || 0} variant="highlight" />
           <StatCard label="Tipo de Conta" value={user?.product || 'Premium'} variant="highlight" />
-          <StatCard label="Status" value="Ativo" variant="highlight" />
+          <StatCard label="Playlists" value={playlists.length.toString()} variant="highlight" />
         </div>
+
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {/* Gráficos */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {topTracks.length > 0 && <PopularityChart tracks={topTracks} />}
+              {topArtists.length > 0 && <ArtistsChart artists={topArtists} />}
+            </div>
+          </>
+        )}
 
         {/* Links Rápidos */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
