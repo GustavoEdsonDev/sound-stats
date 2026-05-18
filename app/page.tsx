@@ -85,6 +85,7 @@ function LoginContent() {
   const handleLogout = () => {
     clearAuth();
     setError(null);
+    router.push('/');
   };
 
   const isAuthenticated = typeof window !== 'undefined' && !!sessionStorage.getItem('spotify_access_token');
