@@ -38,17 +38,27 @@ function LoginContent() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData.message || 'Falha ao autenticar';
-        
-        // Se for código inválido/expirado, dar mensagem mais clara
-        if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
-          throw new Error('Código de autorização expirou. Faça login novamente clicando no botão abaixo.');
+        try {
+          const errorData = await response.json();
+          const errorMsg = errorData.message || 'Falha ao autenticar';
+          
+          // Se for código inválido/expirado, dar mensagem mais clara
+          if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
+            throw new Error('Código de autorização expirou. Faça login novamente clicando no botão abaixo.');
+          }
+          throw new Error(errorMsg);
+        } catch (parseErr) {
+          throw new Error('Erro ao processar resposta de autenticação');
         }
-        throw new Error(errorMsg);
       }
 
-      const { user, token } = await response.json();
+      const data = await response.json();
+      const user = data.user;
+      const token = data.token;
+      
+      if (!user || !token) {
+        throw new Error('Resposta de autenticação inválida');
+      }
 
       // Store token with expiration
       storeAuth(

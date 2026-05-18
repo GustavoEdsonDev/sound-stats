@@ -56,13 +56,19 @@ export function getStoredAuth(): StoredAuthData | null {
   }
 
   try {
+    const parsedUser = JSON.parse(userStr);
+    if (!parsedUser || typeof parsedUser !== 'object') {
+      clearAuth();
+      return null;
+    }
     return {
       accessToken: token,
-      user: JSON.parse(userStr),
+      user: parsedUser,
       expiresAt,
       refreshToken: refreshToken || undefined,
     };
-  } catch {
+  } catch (err) {
+    clearAuth();
     return null;
   }
 }
