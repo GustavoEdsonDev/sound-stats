@@ -12,10 +12,14 @@ interface ArtistsChartProps {
 const COLORS = ['#22C55E', '#16A34A', '#15803D', '#166534', '#052E16', '#3B82F6', '#06B6D4', '#EC4899'];
 
 export function ArtistsChart({ artists }: ArtistsChartProps) {
+  console.log('[ArtistsChart] Recebido artists:', artists.length, artists);
+  
   const data = artists.slice(0, 8).map((artist) => ({
     name: artist.name.length > 15 ? artist.name.substring(0, 12) + '...' : artist.name,
     value: artist.popularity,
   }));
+
+  console.log('[ArtistsChart] Dados do gráfico:', data);
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
