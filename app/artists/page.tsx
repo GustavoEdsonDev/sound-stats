@@ -65,7 +65,3 @@ export default function Artists() {
     </ProtectedRoute>
   );
 }
-      <ArtistsContent />
-    </ProtectedRoute>
-  );
-}
