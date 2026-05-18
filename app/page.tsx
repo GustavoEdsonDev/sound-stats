@@ -29,7 +29,6 @@ function LoginContent() {
     setError(null);
 
     try {
-      // Exchange code for token and get user profile
       const response = await fetch('/api/auth/callback', {
         method: 'POST',
         headers: {
@@ -39,8 +38,14 @@ function LoginContent() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to authenticate');
+        const errorData = await response.json();
+        const errorMsg = errorData.message || 'Falha ao autenticar';
+        
+        // Se for código inválido/expirado, dar mensagem mais clara
+        if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
+          throw new Error('Código de autorização expirou. Faça login novamente clicando no botão abaixo.');
+        }
+        throw new Error(errorMsg);
       }
 
       const { user, token } = await response.json();
@@ -56,7 +61,7 @@ function LoginContent() {
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Ocorreu um erro');
       setIsLoading(false);
     }
   };
