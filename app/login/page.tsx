@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { storeAuth, clearAuth } from '@/utils/auth';
+import { logAuthEvent } from '@/utils/authLogger';
 
 function LoginContent() {
   const router = useRouter();
@@ -27,6 +28,10 @@ function LoginContent() {
   const handleCallback = async (code: string) => {
     setIsLoading(true);
     setError(null);
+    
+    logAuthEvent('LOGIN_START', 'Iniciando autenticação com código de autorização', {
+      codeLength: code.length,
+    });
 
     try {
       const response = await fetch('/api/auth/callback', {
@@ -41,6 +46,11 @@ function LoginContent() {
         try {
           const errorData = await response.json();
           const errorMsg = errorData.message || 'Falha ao autenticar';
+          
+          logAuthEvent('LOGIN_FAILED', `Falha na autenticação: ${errorMsg}`, {
+            statusCode: response.status,
+            errorDetails: errorData,
+          });
           
           // Se for código inválido/expirado, dar mensagem mais clara
           if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
@@ -57,6 +67,10 @@ function LoginContent() {
       const token = data.token;
       
       if (!user || !token) {
+        logAuthEvent('AUTH_ERROR', 'Resposta de autenticação inválida', {
+          hasUser: !!user,
+          hasToken: !!token,
+        });
         throw new Error('Resposta de autenticação inválida');
       }
 
@@ -71,13 +85,22 @@ function LoginContent() {
       // Redirecionar para dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro');
+      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro';
+      
+      logAuthEvent('AUTH_ERROR', `Erro durante autenticação: ${errorMessage}`, {
+        errorType: err instanceof Error ? err.name : 'Unknown',
+      });
+      
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
 
   const handleSpotifyLogin = () => {
     setIsLoading(true);
+    
+    logAuthEvent('LOGIN_START', 'Redirecionando para login do Spotify');
+    
     try {
       const response = fetch('/api/auth/spotify-auth-url', {
         method: 'GET',
@@ -88,11 +111,17 @@ function LoginContent() {
           window.location.href = authUrl;
         })
         .catch((err) => {
+          logAuthEvent('LOGIN_FAILED', 'Falha ao obter URL de autenticação do Spotify', {
+            error: err instanceof Error ? err.message : 'Erro desconhecido',
+          });
           setError('Falha ao iniciar login do Spotify');
           setIsLoading(false);
         });
     } catch (err) {
-          setError('Falha ao iniciar login do Spotify');
+      logAuthEvent('AUTH_ERROR', 'Erro ao iniciar login', {
+        error: err instanceof Error ? err.message : 'Erro desconhecido',
+      });
+      setError('Falha ao iniciar login do Spotify');
       setIsLoading(false);
     }
   };
