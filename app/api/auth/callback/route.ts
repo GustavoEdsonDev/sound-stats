@@ -28,8 +28,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(authResponse);
   } catch (error) {
+    console.error('Auth callback error:', error);
+    
+    let message = 'Falha na autenticação';
+    
+    if (error instanceof Error) {
+      message = error.message;
+      
+      // Se for erro de validação do Zod
+      if (error.name === 'ZodError') {
+        message = 'Erro ao validar dados de autenticação';
+        console.error('Validation details:', (error as any).issues);
+      }
+    }
+    
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : 'Falha na autenticação' },
+      { message },
       { status: 500 }
     );
   }
