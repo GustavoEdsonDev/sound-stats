@@ -19,7 +19,7 @@ O Access Token é uma string que contém as credenciais e permissões necessári
 O token é obtido após o usuário fazer login via Spotify OAuth:
 
 ```typescript
-// No callback da autenticação (app/api/auth/callback/route.ts)
+// No callback da autenticação (app/api/auth/login/route.ts)
 const token = await spotifyService.exchangeCodeForToken(code);
 const user = await spotifyService.getUserProfile(token.access_token);
 
