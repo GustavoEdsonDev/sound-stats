@@ -12,28 +12,89 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const auth = searchParams.get('auth');
     const code = searchParams.get('code');
     const errorParam = searchParams.get('error');
 
+    // Se houver erro do Spotify
     if (errorParam) {
       setError(`Spotify auth failed: ${errorParam}`);
       return;
     }
 
+    // Novo fluxo: Spotify redireciona para /api/auth/callback (GET)
+    // que processa o código e redireciona aqui com ?auth={data}
+    if (auth) {
+      try {
+        const authData = JSON.parse(decodeURIComponent(auth));
+        handleAuthSuccess(authData);
+      } catch (err) {
+        logAuthEvent('AUTH_ERROR', 'Failed to parse auth data from URL');
+        setError('Falha ao processar dados de autenticação');
+      }
+      return;
+    }
+
+    // Fallback: Se houver código (fluxo antigo), processar no cliente
     if (code) {
       handleCallback(code);
     }
   }, [searchParams]);
 
+  const handleAuthSuccess = (authData: any) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const user = authData.user;
+      const token = authData.token;
+
+      if (!user || !token) {
+        logAuthEvent('AUTH_ERROR', 'Invalid auth data received', {
+          hasUser: !!user,
+          hasToken: !!token,
+        });
+        throw new Error('Dados de autenticação inválidos');
+      }
+
+      // Armazenar token
+      storeAuth(
+        token.access_token,
+        user,
+        token.expires_in || 3600,
+        token.refresh_token
+      );
+
+      logAuthEvent('LOGIN_SUCCESS', 'User logged in successfully', {
+        userId: user.id,
+        displayName: user.display_name,
+      });
+
+      // Redirecionar para dashboard
+      router.push('/dashboard');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro';
+
+      logAuthEvent('AUTH_ERROR', `Auth error: ${errorMessage}`, {
+        errorType: err instanceof Error ? err.name : 'Unknown',
+      });
+
+      setError(errorMessage);
+      setIsLoading(false);
+    }
+  };
+
+  // Fallback: Se o novo fluxo falhar, tentar processamento no cliente (compatibilidade)
   const handleCallback = async (code: string) => {
     setIsLoading(true);
     setError(null);
-    
-    logAuthEvent('LOGIN_START', 'Iniciando autenticação com código de autorização', {
+
+    logAuthEvent('LOGIN_START', 'Processing auth code (client-side fallback)', {
       codeLength: code.length,
     });
 
     try {
+      // Fallback: fazer POST para endpoint que ainda suporta POST
       const response = await fetch('/api/auth/callback', {
         method: 'POST',
         headers: {
@@ -43,54 +104,26 @@ function LoginContent() {
       });
 
       if (!response.ok) {
-        try {
-          const errorData = await response.json();
-          const errorMsg = errorData.message || 'Falha ao autenticar';
-          
-          logAuthEvent('LOGIN_FAILED', `Falha na autenticação: ${errorMsg}`, {
-            statusCode: response.status,
-            errorDetails: errorData,
-          });
-          
-          // Se for código inválido/expirado, dar mensagem mais clara
-          if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
-            throw new Error('Código de autorização expirou. Faça login novamente clicando no botão abaixo.');
-          }
-          throw new Error(errorMsg);
-        } catch (parseErr) {
-          throw new Error('Erro ao processar resposta de autenticação');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.message || 'Falha ao autenticar';
+
+        logAuthEvent('LOGIN_FAILED', `Auth failed: ${errorMsg}`, {
+          statusCode: response.status,
+        });
+
+        if (errorMsg.includes('Invalid authorization code') || errorMsg.includes('invalid_grant')) {
+          throw new Error('Código de autorização expirou. Faça login novamente.');
         }
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
-      const user = data.user;
-      const token = data.token;
-      
-      if (!user || !token) {
-        logAuthEvent('AUTH_ERROR', 'Resposta de autenticação inválida', {
-          hasUser: !!user,
-          hasToken: !!token,
-        });
-        throw new Error('Resposta de autenticação inválida');
-      }
-
-      // Armazenar token com expiração
-      storeAuth(
-        token.access_token,
-        user,
-        token.expires_in || 3600,
-        token.refresh_token
-      );
-
-      // Redirecionar para dashboard
-      router.push('/dashboard');
+      handleAuthSuccess(data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro';
-      
-      logAuthEvent('AUTH_ERROR', `Erro durante autenticação: ${errorMessage}`, {
-        errorType: err instanceof Error ? err.name : 'Unknown',
-      });
-      
+
+      logAuthEvent('AUTH_ERROR', `Client-side auth error: ${errorMessage}`);
+
       setError(errorMessage);
       setIsLoading(false);
     }
