@@ -1,4 +1,4 @@
-import { SpotifyTokenSchema, SpotifyUserSchema, AuthResponseSchema } from '@/types/spotify';
+import { SpotifyTokenSchema, SpotifyUserSchema, AuthResponseSchema, SpotifyTopTracksResponseSchema, SpotifyTrackSchema, SpotifyArtistSchema } from '@/types/spotify';
 import { z } from 'zod';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
@@ -144,21 +144,30 @@ export class SpotifyService {
 
   /**
    * Obter top tracks do usuário
+   * Endpoint: GET /v1/me/top/tracks
+   * 
+   * Busca as músicas mais ouvidas do usuário dentro de um período
+   * @param accessToken - Token de acesso OAuth 2.0
+   * @param timeRange - Período: 'long_term' (meses), 'medium_term' (semanas), 'short_term' (dias)
+   * @param limit - Número máximo de tracks (padrão: 50)
+   * @returns Lista de top tracks com informações completas
    */
   async getUserTopTracks(
     accessToken: string,
     timeRange: 'long_term' | 'medium_term' | 'short_term' = 'medium_term',
     limit: number = 50
-  ) {
+  ): Promise<z.infer<typeof SpotifyTopTracksResponseSchema>> {
     const params = new URLSearchParams({
       time_range: timeRange,
       limit: limit.toString(),
     });
 
-    return this.makeRequest<any>(
+    const data = await this.makeRequest<any>(
       `${SPOTIFY_API_BASE}/me/top/tracks?${params}`,
       accessToken
     );
+    
+    return SpotifyTopTracksResponseSchema.parse(data);
   }
 
   /**
