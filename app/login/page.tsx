@@ -22,7 +22,7 @@ function LoginContent() {
       return;
     }
 
-    // Novo fluxo: Spotify redireciona para /api/auth/callback (GET)
+    // Novo fluxo: Spotify redireciona para /api/auth/login (GET)
     // que processa o código e redireciona aqui com ?auth={data}
     if (auth) {
       try {
@@ -95,7 +95,7 @@ function LoginContent() {
 
     try {
       // Fallback: fazer POST para endpoint que ainda suporta POST
-      const response = await fetch('/api/auth/callback', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

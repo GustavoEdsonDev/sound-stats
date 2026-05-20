@@ -16,7 +16,7 @@ This project uses Zod for schema validation and integrates with Spotify's OAuth2
 
 **API Routes:**
 - `app/api/auth/spotify-auth-url/route.ts` - Generate OAuth authorization URL
-- `app/api/auth/callback/route.ts` - Handle OAuth callback and token exchange
+- `app/api/auth/login/route.ts` - Handle OAuth callback and token exchange
 
 **Components & Hooks:**
 - `components/ProtectedRoute.tsx` - Route protection wrapper
@@ -70,7 +70,7 @@ The app requests the following Spotify scopes:
 2. Redirected to Spotify authorization page
 3. User grants permissions
 4. Spotify redirects to `/login?code=AUTH_CODE`
-5. Frontend exchanges code for access token via `/api/auth/callback`
+5. Frontend exchanges code for access token via `/api/auth/login`
 6. Token and user data stored in sessionStorage
 7. Redirected to dashboard
 

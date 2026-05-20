@@ -146,7 +146,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 ```env
 NEXT_PUBLIC_SPOTIFY_CLIENT_ID=seu_client_id_aqui
 SPOTIFY_CLIENT_SECRET=seu_client_secret_aqui
-NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/callback
+NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/login
 ```
 
 4. **Execute em desenvolvimento**
@@ -163,7 +163,7 @@ Abra [http://localhost:3000](http://localhost:3000) no navegador.
 2. Crie uma nova aplicação
 3. Aceite os termos e crie a app
 4. Na seção "Authentication", copie seu `Client ID` e `Client Secret`
-5. Configure o `Redirect URI` como: `http://localhost:3000/api/auth/callback`
+5. Configure o `Redirect URI` como: `http://localhost:3000/api/auth/login`
 
 Para instruções detalhadas, veja [SPOTIFY_AUTH_SETUP.md](SPOTIFY_AUTH_SETUP.md)
 
@@ -197,7 +197,7 @@ Para instruções detalhadas, veja [SPOTIFY_AUTH_SETUP.md](SPOTIFY_AUTH_SETUP.md
                    │
                    ▼ (usuário autoriza)
     ┌──────────────────────────────────────────────┐
-    │ 4. Spotify redireciona para /api/auth/callback
+    │ 4. Spotify redireciona para /api/auth/login
     │    com código de autorização                 │
     └──────────────┬───────────────────────────────┘
                    │
@@ -632,12 +632,12 @@ git push origin main
   ```
   NEXT_PUBLIC_SPOTIFY_CLIENT_ID=seu_client_id
   SPOTIFY_CLIENT_SECRET=seu_client_secret
-  NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=https://seu-dominio.vercel.app/api/auth/callback
+  NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=https://seu-dominio.vercel.app/api/auth/login
   ```
 
 4. **Atualize OAuth Redirect URI no Spotify**
 - Vá para [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-- Na sua aplicação, adicione: `https://seu-dominio.vercel.app/api/auth/callback`
+- Na sua aplicação, adicione: `https://seu-dominio.vercel.app/api/auth/login`
 
 ### Build Vercel
 ```bash
