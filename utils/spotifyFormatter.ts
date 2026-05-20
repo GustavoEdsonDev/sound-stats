@@ -51,9 +51,9 @@ export function getTrackDetails(track: SpotifyTrack) {
     duration: formatDuration(track.duration_ms),
     popularity: track.popularity || 0,
     explicit: track.explicit || false,
-    previewUrl: track.preview_url,
-    spotifyUrl: track.external_urls.spotify,
-    albumArt: track.album?.images?.[0]?.url,
+    previewUrl: track.preview_url || null,
+    spotifyUrl: track.external_urls?.spotify || '#',
+    albumArt: track.album?.images?.[0]?.url || null,
   };
 }
 
