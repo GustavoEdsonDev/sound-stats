@@ -169,7 +169,10 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * Convert ISO 3166-1 alpha-2 country code to country name
+ * Get the English country name for an ISO 3166-1 alpha-2 country code.
+ *
+ * @param countryCode - Two-letter country code (case-insensitive). If omitted or not length 2, it is treated as invalid.
+ * @returns The country name in English, or an empty string if the code is missing, invalid, or has no mapping.
  */
 export function countryCodeToName(countryCode?: string): string {
   if (!countryCode || countryCode.length !== 2) return '';
@@ -179,9 +182,11 @@ export function countryCodeToName(countryCode?: string): string {
 }
 
 /**
- * Criar header de autorização para a API do Spotify
- * Formato: Authorization: Bearer <access_token>
- * Válido por 3600 segundos (1 hora)
+ * Builds an authorization header object for Spotify API requests.
+ *
+ * @param accessToken - The Spotify access token to include in the `Authorization` header
+ * @returns An object containing `Authorization: Bearer <accessToken>` and `Content-Type: application/json`
+ * @throws Error if `accessToken` is falsy
  */
 export function createAuthorizationHeader(accessToken: string): Record<string, string> {
   if (!accessToken) {
@@ -195,7 +200,10 @@ export function createAuthorizationHeader(accessToken: string): Record<string, s
 }
 
 /**
- * Validar se o token está no formato correto
+ * Determines whether a given access token appears valid by checking type and minimum length.
+ *
+ * @param token - The access token to validate; may be `null`.
+ * @returns `true` if `token` is a string longer than 10 characters, `false` otherwise.
  */
 export function isValidAccessToken(token: string | null): boolean {
   if (!token) return false;
@@ -204,7 +212,9 @@ export function isValidAccessToken(token: string | null): boolean {
 }
 
 /**
- * Obter tempo restante para expiração do token em minutos
+ * Get the remaining token lifetime rounded down to whole minutes.
+ *
+ * @returns The number of whole minutes until the token expires; 0 if expired or unavailable.
  */
 export function getTokenExpirationMinutes(): number {
   const seconds = getTokenTimeToExpire();
@@ -212,7 +222,9 @@ export function getTokenExpirationMinutes(): number {
 }
 
 /**
- * Verificar se o token está próximo de expirar (menos de 5 minutos)
+ * Indicates whether the stored access token will expire in less than five minutes.
+ *
+ * @returns `true` if fewer than five minutes remain until expiration, `false` otherwise.
  */
 export function isTokenNearExpiration(): boolean {
   const minutesLeft = getTokenExpirationMinutes();
