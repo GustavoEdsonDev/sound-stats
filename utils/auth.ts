@@ -161,3 +161,44 @@ export function countryCodeToName(countryCode?: string): string {
   const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
   return regionNames.of(countryCode.toUpperCase()) || '';
 }
+
+/**
+ * Criar header de autorização para a API do Spotify
+ * Formato: Authorization: Bearer <access_token>
+ * Válido por 3600 segundos (1 hora)
+ */
+export function createAuthorizationHeader(accessToken: string): Record<string, string> {
+  if (!accessToken) {
+    throw new Error('Access token é obrigatório');
+  }
+
+  return {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+  };
+}
+
+/**
+ * Validar se o token está no formato correto
+ */
+export function isValidAccessToken(token: string | null): boolean {
+  if (!token) return false;
+  // Token do Spotify é uma string base64url, deve ter comprimento > 10
+  return typeof token === 'string' && token.length > 10;
+}
+
+/**
+ * Obter tempo restante para expiração do token em minutos
+ */
+export function getTokenExpirationMinutes(): number {
+  const seconds = getTokenTimeToExpire();
+  return Math.floor(seconds / 60);
+}
+
+/**
+ * Verificar se o token está próximo de expirar (menos de 5 minutos)
+ */
+export function isTokenNearExpiration(): boolean {
+  const minutesLeft = getTokenExpirationMinutes();
+  return minutesLeft < 5;
+}

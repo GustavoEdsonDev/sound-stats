@@ -16,6 +16,33 @@ export class SpotifyService {
   }
 
   /**
+   * Método privado para fazer requisições à API do Spotify com headers de autorização
+   * Formata automaticamente o header Authorization como "Bearer <token>"
+   */
+  private async makeRequest<T>(
+    url: string,
+    accessToken: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Falha na requisição Spotify: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`
+      );
+    }
+
+    return response.json() as Promise<T>;
+  }
+
+  /**
    * Gerar URL de autorização do Spotify
    */
   getAuthorizationUrl(): string {
@@ -108,18 +135,10 @@ export class SpotifyService {
    * Obter perfil do usuário atual
    */
   async getUserProfile(accessToken: string): Promise<z.infer<typeof SpotifyUserSchema>> {
-    const response = await fetch(`${SPOTIFY_API_BASE}/me`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar perfil do usuário: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-    }
-
-    const data = await response.json();
+    const data = await this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/me`,
+      accessToken
+    );
     return SpotifyUserSchema.parse(data);
   }
 
@@ -136,19 +155,10 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/me/top/tracks?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar top tracks: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/me/top/tracks?${params}`,
+      accessToken
+    );
   }
 
   /**
@@ -164,19 +174,10 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/me/top/artists?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar top artistas: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/me/top/artists?${params}`,
+      accessToken
+    );
   }
 
   /**
@@ -187,19 +188,10 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/me/playlists?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar playlists do usuário: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/me/playlists?${params}`,
+      accessToken
+    );
   }
 
   /**
@@ -210,19 +202,10 @@ export class SpotifyService {
       limit: limit.toString(),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar tocadas recentemente: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/me/player/recently-played?${params}`,
+      accessToken
+    );
   }
 
   /**
@@ -235,19 +218,10 @@ export class SpotifyService {
       ids: trackIds.join(','),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/tracks?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar detalhes de tracks: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/tracks?${params}`,
+      accessToken
+    );
   }
 
   /**
@@ -260,19 +234,10 @@ export class SpotifyService {
       ids: artistIds.join(','),
     });
 
-    const response = await fetch(`${SPOTIFY_API_BASE}/artists?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Falha ao buscar detalhes de artistas: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return this.makeRequest<any>(
+      `${SPOTIFY_API_BASE}/artists?${params}`,
+      accessToken
+    );
   }
 }
 
