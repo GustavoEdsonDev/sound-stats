@@ -45,9 +45,6 @@ export function storeAuth(
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
   }
   
-  // Também armazenar em cookies para persistência entre abas
-  storeAuthAsCookies(accessToken, user, expiresIn, refreshToken);
-  
   // Log de autenticação bem-sucedida
   logAuthEvent('LOGIN_SUCCESS', 'Usuário autenticado com sucesso', {
     userId: user?.id,
@@ -167,9 +164,6 @@ export function clearAuth(): void {
   sessionStorage.removeItem(STORAGE_KEYS.EXPIRES_AT);
   localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   
-  // Limpar cookies de autenticação
-  clearAuthCookies();
-  
   // Log de logout
   logAuthEvent('LOGOUT', 'Usuário desconectado e dados de autenticação removidos', {}, userId);
 }
@@ -263,89 +257,62 @@ export function isTokenNearExpiration(): boolean {
 }
 
 /**
- * Definir cookie de autenticação
+ * Funções de Cookie (Comentadas - Causam aviso de cross-site)
+ * 
+ * Para segurança, use apenas sessionStorage/localStorage no cliente.
+ * Para cookies HttpOnly seguros, implemente no servidor (NextResponse.cookies.set()).
+ * 
+ * Essas funções estão aqui como referência se precisar
+ * implementar cookies no lado do servidor no futuro.
  */
-export function setAuthCookie(name: string, value: string, maxAge?: number): void {
-  if (typeof window === 'undefined') return;
 
-  let cookieString = `${name}=${encodeURIComponent(value)}`;
-  
-  if (maxAge) {
-    cookieString += `; Max-Age=${maxAge}`;
-  }
-  
-  // HttpOnly não pode ser definido do lado do cliente, então usar Secure e SameSite
-  cookieString += '; Path=/; SameSite=Strict';
-  
-  // Adicionar Secure em produção
-  if (process.env.NODE_ENV === 'production') {
-    cookieString += '; Secure';
-  }
-  
-  document.cookie = cookieString;
-}
+// export function setAuthCookie(name: string, value: string, maxAge?: number): void {
+//   if (typeof window === 'undefined') return;
+//   let cookieString = `${name}=${encodeURIComponent(value)}`;
+//   if (maxAge) cookieString += `; Max-Age=${maxAge}`;
+//   cookieString += '; Path=/; SameSite=Strict';
+//   if (process.env.NODE_ENV === 'production') cookieString += '; Secure';
+//   document.cookie = cookieString;
+// }
 
-/**
- * Obter cookie de autenticação
- */
-export function getAuthCookie(name: string): string | null {
-  if (typeof window === 'undefined') return null;
+// export function getAuthCookie(name: string): string | null {
+//   if (typeof window === 'undefined') return null;
+//   const cookieArray = document.cookie.split(';');
+//   for (const cookie of cookieArray) {
+//     const [cookieName, cookieValue] = cookie.trim().split('=');
+//     if (cookieName === name && cookieValue) {
+//       return decodeURIComponent(cookieValue);
+//     }
+//   }
+//   return null;
+// }
 
-  const cookieArray = document.cookie.split(';');
-  
-  for (const cookie of cookieArray) {
-    const [cookieName, cookieValue] = cookie.trim().split('=');
-    if (cookieName === name && cookieValue) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  
-  return null;
-}
+// export function removeAuthCookie(name: string): void {
+//   if (typeof window === 'undefined') return;
+//   document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Strict`;
+// }
 
-/**
- * Remover cookie de autenticação específico
- */
-export function removeAuthCookie(name: string): void {
-  if (typeof window === 'undefined') return;
-  
-  document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Strict`;
-}
+// export function clearAuthCookies(): void {
+//   if (typeof window === 'undefined') return;
+//   removeAuthCookie(COOKIE_NAMES.ACCESS_TOKEN);
+//   removeAuthCookie(COOKIE_NAMES.REFRESH_TOKEN);
+//   removeAuthCookie(COOKIE_NAMES.USER);
+// }
 
-/**
- * Limpar todos os cookies de autenticação
- */
-export function clearAuthCookies(): void {
-  if (typeof window === 'undefined') return;
+// export function storeTokenInCookie(accessToken: string, expiresIn: number): void {
+//   setAuthCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, expiresIn);
+// }
 
-  // Remover cookies de autenticação
-  removeAuthCookie(COOKIE_NAMES.ACCESS_TOKEN);
-  removeAuthCookie(COOKIE_NAMES.REFRESH_TOKEN);
-  removeAuthCookie(COOKIE_NAMES.USER);
-}
-
-/**
- * Armazenar token em cookie (após receber do servidor)
- */
-export function storeTokenInCookie(accessToken: string, expiresIn: number): void {
-  setAuthCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, expiresIn);
-}
-
-/**
- * Converter auth data para cookies
- */
-export function storeAuthAsCookies(
-  accessToken: string,
-  user: any,
-  expiresIn: number,
-  refreshToken?: string
-): void {
-  setAuthCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, expiresIn);
-  setAuthCookie(COOKIE_NAMES.USER, JSON.stringify(user));
-  
-  if (refreshToken) {
-    // Refresh token com expiração maior (7 dias)
-    setAuthCookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, 7 * 24 * 60 * 60);
-  }
-}
+// export function storeAuthAsCookies(
+//   accessToken: string,
+//   user: any,
+//   expiresIn: number,
+//   refreshToken?: string
+// ): void {
+//   setAuthCookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, expiresIn);
+//   setAuthCookie(COOKIE_NAMES.USER, JSON.stringify(user));
+//   if (refreshToken) {
+//     setAuthCookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, 7 * 24 * 60 * 60);
+//   }
+// }
 
