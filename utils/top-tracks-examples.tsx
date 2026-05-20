@@ -126,7 +126,7 @@ export function TopTracksExample() {
         {tracks.map((track, index) => (
           <div key={track.id} className="border p-4 rounded-lg hover:bg-gray-50">
             <div className="flex gap-4">
-              {track.album?.images?.[0] && (
+              {track.album?.images?.[0]?.url && (
                 <img 
                   src={track.album.images[0].url} 
                   alt={track.name}
@@ -154,14 +154,16 @@ export function TopTracksExample() {
                   )}
                 </div>
               </div>
-              <a 
-                href={track.external_urls.spotify}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="self-center text-green-500 hover:text-green-700"
-              >
-                ▶ Abrir no Spotify
-              </a>
+              {track.external_urls?.spotify && (
+                <a 
+                  href={track.external_urls.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="self-center text-green-500 hover:text-green-700"
+                >
+                  ▶ Abrir no Spotify
+                </a>
+              )}
             </div>
           </div>
         ))}
