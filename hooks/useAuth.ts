@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { SpotifyUser, SpotifyToken } from '@/types/spotify';
 import { getStoredAuth, clearAuth, getTokenTimeToExpire } from '@/utils/auth';
+import { logAuthEvent } from '@/utils/authLogger';
 
 interface AuthState {
   user: SpotifyUser | null;
@@ -26,6 +27,13 @@ export function useAuth() {
 
       if (storedAuth) {
         const expiresIn = getTokenTimeToExpire();
+        
+        logAuthEvent('SESSION_RESTORED', 'Sessão restaurada do armazenamento', {
+          userId: storedAuth.user?.id,
+          displayName: storedAuth.user?.display_name,
+          expiresIn,
+        }, storedAuth.user?.id);
+        
         setAuthState({
           user: storedAuth.user,
           token: {

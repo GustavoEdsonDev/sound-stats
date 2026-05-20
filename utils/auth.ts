@@ -2,6 +2,8 @@
  * Utilitários de armazenamento de autenticação
  */
 
+import { logAuthEvent } from './authLogger';
+
 export interface StoredAuthData {
   accessToken: string;
   refreshToken?: string;
@@ -45,6 +47,14 @@ export function storeAuth(
   
   // Também armazenar em cookies para persistência entre abas
   storeAuthAsCookies(accessToken, user, expiresIn, refreshToken);
+  
+  // Log de autenticação bem-sucedida
+  logAuthEvent('LOGIN_SUCCESS', 'Usuário autenticado com sucesso', {
+    userId: user?.id,
+    displayName: user?.display_name,
+    expiresIn,
+    tokenLength: accessToken.length,
+  }, user?.id);
 }
 
 /**
@@ -100,6 +110,10 @@ export function getAccessToken(): string | null {
   const expiresAt = parseInt(expiresAtStr, 10);
 
   if (isTokenExpired(expiresAt)) {
+    logAuthEvent('TOKEN_EXPIRED', 'Token de acesso expirou', {
+      expiresAt: new Date(expiresAt).toISOString(),
+      now: new Date().toISOString(),
+    });
     clearAuth();
     return null;
   }
@@ -134,6 +148,20 @@ export function getTokenTimeToExpire(): number {
  */
 export function clearAuth(): void {
   if (typeof window === 'undefined') return;
+  
+  // Obter dados do usuário antes de limpar para o log
+  const userStr = sessionStorage.getItem(STORAGE_KEYS.USER);
+  let userId: string | undefined;
+  
+  try {
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      userId = user?.id;
+    }
+  } catch (err) {
+    // Ignorar erros de parsing
+  }
+  
   sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   sessionStorage.removeItem(STORAGE_KEYS.USER);
   sessionStorage.removeItem(STORAGE_KEYS.EXPIRES_AT);
@@ -141,6 +169,9 @@ export function clearAuth(): void {
   
   // Limpar cookies de autenticação
   clearAuthCookies();
+  
+  // Log de logout
+  logAuthEvent('LOGOUT', 'Usuário desconectado e dados de autenticação removidos', {}, userId);
 }
 
 /**
